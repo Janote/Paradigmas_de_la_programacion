@@ -293,6 +293,7 @@ data AB a = Nil | Bin (AB a) a (AB a) deriving Show
 
 arbolDePrueba :: AB Int 
 arbolDePrueba = Bin (Bin Nil 1 Nil) 24 (Bin Nil 5 Nil)
+
 -- i
 
 foldAB :: b -> (b -> a -> b -> b) -> AB a -> b 
@@ -307,6 +308,8 @@ recAB fNil fBin arbol = case arbol of
   Bin i r d -> fBin i d (rec i) r (rec d)
   where rec = recAB fNil fBin
 
+-- ii
+
 esNil :: AB a -> Bool 
 esNil arbol = case arbol of 
   Nil -> True 
@@ -318,13 +321,14 @@ altura = foldAB 0 (\ri _ rd -> 1 + max ri rd)
 cantNodos :: AB a -> Int 
 cantNodos = foldAB 0 (\ri _ rd -> if ri == 0 && rd == 0 then 1 else ri + rd)
 
--- ii
+-- iii
 
 mejorSegún :: (a -> a -> Bool) -> AB a -> a
 mejorSegún criterio (Bin i r d) = foldAB r f (Bin i r d)
   where
     f ri r rd = mejorSegun criterio [ri, r, rd]
 
+-- iv
 esABB :: Ord a => AB a -> Bool
 esABB = recAB True (\i d ri r rd -> ri && rd && todosCumplen (r >=) i && todosCumplen (r<) d)
 
@@ -333,9 +337,11 @@ todosCumplen _ Nil = True
 todosCumplen criterio (Bin i r d) = foldAB True f (Bin i r d)
   where
     f ri r rd = ri && criterio r && rd 
-                      
-t3 =
-  Bin
-    (Bin (Bin Nil 1 Nil) 3 (Bin Nil 4 Nil))
-    5
-    (Bin (Bin Nil 1 Nil) 8 (Bin Nil 10 Nil))
+
+-- v 
+{-
+En el inciso 2 y 3 para todos los ejercicios en ningun momento necesito acceder a la subestructura, por lo que usamos foldAB.
+
+En cambio en el 4, si necesito ir chequeando c/ subarbol, por lo que usamos el enfoque primitivo recAB.
+
+ -}
