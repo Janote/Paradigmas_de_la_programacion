@@ -142,6 +142,210 @@ Caso P(xs) -> P(x:xs) :
 ∀ xs::[a] . 2 +  (2 * length xs)  =  2 +  2 * length xs {H.I}
 
 
+ii. ∀ xs::[a] . ∀ ys::[a] . length (xs ++ ys) = length xs + length ys
+
+Vamos a probar el predicado por induccion estructural sobre xs, defino P(xs):
+
+P(xs) = ∀ ys::[a] . length (xs ++ ys) = length xs + length ys
+
+
+Caso base: xs = [] : 
+
+∀ ys::[a] . length ([] ++ ys) = length [] + length ys
+∀ ys::[a] . length ([] ++ ys) = 0 + length ys {L0}
+∀ ys::[a] . length ys = 0 + length ys {++0}
+∀ ys::[a] . length ys = 0 + length ys {+}
+∀ ys::[a] . length ys = length ys {+}
+
+
+Caso Inductivo: P(xs) -> P(x:xs)
+
+∀ ys::[a] . length ((x:xs) ++ ys) = length (x:xs) + length ys
+∀ ys::[a] . length ((x:xs) ++ ys) = length (x:xs) + length ys {++1}
+∀ ys::[a] . length ( x : (xs ++ ys)) = length (x:xs) + length ys {++1}
+∀ ys::[a] . 1 + length (xs ++ ys) = length (x:xs) + length ys {L1}
+∀ ys::[a] . 1 + length (xs ++ ys) = 1 + length xs + length ys {L1}
+∀ ys::[a] . 1 + length xs + length ys = 1 + length xs + length ys {HI}
+
+
+iii. ∀ xs::[a] . ∀ x::a . [x] ++ xs = x:xs
+
+Por induccion estructural, defino el predicado unario.
+
+P(xs):  ∀ x::a . [x] ++ xs = x:xs
+
+
+Caso Base: P([]):
+
+∀ x::a . [x] ++ [] = x:[]
+∀ x::a . x : ([] ++ []) = x:[] {++1}
+∀ x::a . x : [] = x:[] {++0}
+
+Caso Inductivo: P(xs) -> P(x:xs) : 
+
+P(y:ys) : 
+∀ x::a . [x] ++ (y:ys) = x:(y:ys)
+∀ x::a . x : ( [] ++ (y:ys)) = x:(y:ys) {++1}
+∀ x::a . x : (y:ys) = x:(y:ys) {++0}
+
+
+
+iv. ∀ xs::[a] . xs ++ [] = xs
+
+Por induccion estructural, defino el predicado unario.
+
+P(xs) : xs ++ [] = xs
+
+P([]):
+
+[] ++ [] = []
+[] = [] {++1}
+
+P(x:xs): 
+    (x:xs) ++ [] = (x:xs)
+    x : (xs ++ []) = (x : xs) {++1}
+    x : xs = (x : xs) {HI}
+    
+
+v. ∀ xs::[a] . ∀ ys::[a] . ∀ zs::[a] . (xs ++ ys) ++ zs = xs ++ (ys ++ zs)
+
+Defino el predicado unario: 
+
+P(xs) : ∀ ys::[a] . ∀ zs::[a] . (xs ++ ys) ++ zs = xs ++ (ys ++ zs)
+
+Caso base P([]):
+∀ ys::[a] . ∀ zs::[a] . ([] ++ ys) ++ zs = [] ++ (ys ++ zs)
+∀ ys::[a] . ∀ zs::[a] . ys ++ zs = [] ++ (ys ++ zs) {++0}
+∀ ys::[a] . ∀ zs::[a] . ys ++ zs = (ys ++ zs) {++0}
+
+Caso Inductivo: P(xs) -> P(x:xs)
+
+∀ ys::[a] . ∀ zs::[a] . ((x:xs) ++ ys) ++ zs = (x:xs) ++ (ys ++ zs)
+∀ ys::[a] . ∀ zs::[a] . ( x : (xs ++ ys)) ++ zs = (x:xs) ++ (ys ++ zs) {++1}
+∀ ys::[a] . ∀ zs::[a] . ( x : (xs ++ ys)) ++ zs = x : (xs ++ (ys ++ zs)) {++1}
+∀ ys::[a] . ∀ zs::[a] . ( x : (xs ++ ys)) ++ zs = x : (xs ++ ys) ++ zs {HI}
+
+
+vi. ∀ xs::[a] . ∀ f::(a->b) . length (map f xs) = length xs
+
+
+P(xs) : ∀ f::(a->b) . length (map f xs) = length xs
+
+P([]) : 
+    ∀ f::(a->b) . length (map f []) = length []
+    ∀ f::(a->b) . length [] = length [] {MAP0}
+    
+P((x:xs)) :
+
+    ∀ f::(a->b) . length (map f (x:xs)) = length (x:xs)
+    ∀ f::(a->b) . length (f x : map f xs) = length (x:xs) {MAP1}
+    ∀ f::(a->b) . length (f x : map f xs) = 1 + length xs {L1}
+    ∀ f::(a->b) . 1 + length( map f xs) = 1 + length xs {L1}
+    ∀ f::(a->b) . 1 + length xs = 1 + length xs {H.I}
+    
+
+vii. ∀ xs::[a] . ∀ p::a->Bool . ∀ e::a . (elem e (filter p xs) ⇒ elem e xs) (si vale Eq a
+
+P(xs) :  ∀ p::a->Bool . ∀ e::a . (elem e (filter p xs) ⇒ elem e xs)
+
+P([]): 
+
+ ∀ p::a->Bool . ∀ e::a . (elem e (filter p []) ⇒ elem e []) 
+ ∀ p::a->Bool . ∀ e::a . (elem e [] ) ⇒ elem e []) {filter0}
+ ∀ p::a->Bool . ∀ e::a . False ⇒ False {elem0}
+ True 
+
+P(x:xs) : 
+∀ p::a->Bool . ∀ e::a . (elem e (filter p (x:xs)) ⇒ elem e (x:xs))
+∀ p::a->Bool . ∀ e::a . (elem e (if p x then x : filter p xs else filter p xs ) ⇒ elem e (x:xs)) {filter1}
+
+Por lema de generacion de booleanos separo en dos casos: 
+
+1) p x = True 
+2) p x = False 
+
+1) p x = True:
+
+∀ p::a->Bool . ∀ e::a . (elem e (if True then x : filter p xs else filter p xs ) ⇒ elem e (x:xs)) {filter1}
+∀ p::a->Bool . ∀ e::a . (elem e (x : filter p xs) ⇒ elem e (x:xs)) {if-true}
+∀ p::a->Bool . ∀ e::a . e == x || elem e (filter p xs) ⇒ elem e (x:xs) {elem}
+
+Por lema de generacion de booleanos separo en dos casos: 
+
+a) e ==  x  
+b) e /= x 
+
+a) e == x 
+True || elem e (filter p xs) -> elem e (x:xs) {case}
+True  -> elem e (x:xs) { ||}
+True  -> e == x || elem e xs { elem}
+True  -> True || elem e xs { case}
+True  -> True { case}
+
+
+b) e /= x : 
+
+∀ p::a->Bool . ∀ e::a . False || elem e (filter p xs) ⇒ elem e (x:xs) {case}
+∀ p::a->Bool . ∀ e::a .  elem e (filter p xs) ⇒ elem e (x:xs) { ||}
+∀ p::a->Bool . ∀ e::a .  elem e (filter p xs) ⇒ e == x || elem e xs {elem}
+∀ p::a->Bool . ∀ e::a .  elem e (filter p xs) ⇒ False || elem e xs {case}
+∀ p::a->Bool . ∀ e::a .  elem e (filter p xs) ⇒ elem e xs {||}
+Que vale por H.i
+
+Vamos con el caso p x = False: 
+
+∀ p::a->Bool . ∀ e::a . (elem e ( filter p xs ) ⇒ elem e (x:xs)) {case}
+∀ p::a->Bool . ∀ e::a . (elem e ( filter p xs ) ⇒ e == x || elem e xs) {elem}
+
+Por lema de generacion de booleanos separo en dos casos: 
+
+a) e ==  x  
+b) e /= x 
+
+a)
+∀ p::a->Bool . ∀ e::a . (elem e ( filter p xs ) ⇒ True || elem e xs) {case}
+∀ p::a->Bool . ∀ e::a . (elem e ( filter p xs ) ⇒ True ) {||}
+∀ p::a->Bool . ∀ e::a . True {->}
+
+b) e /= x 
+∀ p::a->Bool . ∀ e::a . (elem e ( filter p xs ) ⇒ False || elem e xs) {case}
+∀ p::a->Bool . ∀ e::a . (elem e ( filter p xs ) ⇒ elem e xs) {||}
+Vale por H.I 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
