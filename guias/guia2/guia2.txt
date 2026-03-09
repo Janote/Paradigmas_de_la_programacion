@@ -314,6 +314,300 @@ Vale por H.I
 
 
 
+-- Ejercicio 4:
+
+-- i) 
+reverse = foldr (\x rec -> rec ++ (x:[])) []
+
+Por el Principio de xtensionalidad funcional, se debe probar que:
+
+V ys :: [a]. reverse ys = foldr (\x rec -> rec ++ (x:[])) [] ys 
+
+P(ys): reverse ys = foldr (\x rec -> rec ++ (x:[])) [] ys 
+
+P([]): 
+reverse [] = foldr (\x rec -> rec ++ (x:[])) [] [] 
+reverse [] = [] {foldr0}
+foldl (flip (:)) [] [] = [] {R0}
+[] = [] {foldl0}
+
+P(ys) -> P(y:ys) : 
+
+reverse (y:ys) = foldr (\x rec -> rec ++ (x:[])) [] (y:ys)
+foldl (flip (:)) [] (y:ys) = foldr (\x rec -> rec ++ (x:[])) [] (y:ys) {R0}
+foldl (flip (:)) ( (flip (:)) [] y ) ys = foldr (\x rec -> rec ++ (x:[])) [] (y:ys) {foldl1}
+foldl (flip (:)) ( [y] ) ys = foldr (\x rec -> rec ++ (x:[])) [] (y:ys) {Beta}
+foldl (flip (:)) ( [y] ) ys = foldr (\x rec -> rec ++ (x:[])) [] ys  ++ (y:[]) {FOLDR1}
+foldl (flip (:)) ( [y] ) ys = reverse ys  ++ (y:[]) {H.I}
+foldl (flip (:)) ( [y] ) ys = reverse ys  ++ ([y]) {:}
+
+Propongo una equiv y la demuestro: 
+
+foldl (flip (:)) ( [y] ) ys  = reverse0  ys
+
+
+-- ii)
+
+i. ∀ xs::[a] . ∀ ys::[a] . reverse (xs ++ ys) = reverse ys ++ reverse xs
+
+Predicado unario P(xs) : ∀ ys::[a] . reverse (xs ++ ys) = reverse ys ++ reverse xs
+
+P([]) :
+∀ ys::[a] . reverse ([] ++ ys) = reverse ys ++ reverse []
+∀ ys::[a] . reverse  ys = reverse ys ++ reverse [] {++0}
+∀ ys::[a] . reverse  ys = reverse ys ++ reverse [] {++0}
+∀ ys::[a] . reverse  ys = reverse ys ++ foldl (flip (:)) [] [] {R0}
+∀ ys::[a] . reverse  ys = reverse ys ++ [] {FOLDL0}
+∀ ys::[a] . reverse  ys = reverse ys ++ [] {FOLDL0}
+∀ ys::[a] . reverse  ys = reverse ys  {3 -- IV}
+
+P(xs) -> P(x:xs) :
+
+∀ ys::[a] . reverse ((x:xs) ++ ys) = reverse ys ++ reverse (x:xs)
+∀ ys::[a] . reverse ( x : (xs ++ ys)) = reverse ys ++ reverse (x:xs) {++ 1}
+∀ ys::[a] . foldr (\x rec -> rec ++ (x:[])) [] ( x : (xs ++ ys)) = reverse ys ++ reverse (x:xs) {4.1}
+∀ ys::[a] . foldr (\x rec -> rec ++ (x:[])) [] (xs ++ ys) ++ [x] = reverse ys ++ reverse (x:xs) {4.1}
+∀ ys::[a] . reverse (xs ++ ys) ++ [x] = reverse ys ++ reverse (x:xs) {4.1}
+∀ ys::[a] . reverse ys ++ reverse xs ++ [x] = reverse ys ++ reverse (x:xs) {H.I}`
+∀ ys::[a] . reverse ys ++ reverse xs ++ [x] = reverse ys ++ foldr (\x rec -> rec ++ (x:[])) [] (x:xs) {4.1}
+∀ ys::[a] . reverse ys ++ reverse xs ++ [x] = reverse ys ++ foldr (\x rec -> rec ++ (x:[])) []  xs ++ [x] {4.1}
+∀ ys::[a] . reverse ys ++ reverse xs ++ [x] = reverse ys ++ reverse xs ++ [x] {4.1}
+
+4. iii)
+
+
+iii. ∀ xs::[a] . ∀ x::a . reverse (xs ++ [x]) = x:reverse xs
+
+Defino el predicado unario: 
+
+P(ys) : ∀ ys::[a] . ∀ x::a . reverse (ys ++ [x]) = x:reverse ys
+
+P([]):  
+    ∀ ys::[a] . ∀ x::a . reverse ([] ++ [x]) = x:reverse []
+    ∀ ys::[a] . ∀ x::a . reverse [x] = x:reverse [] {++0}
+    ∀ ys::[a] . ∀ x::a . foldr (\x rec -> rec ++ (x:[])) []  [x] = x:foldr (\x rec -> rec ++ (x:[])) []  [] {4.1}
+    ∀ ys::[a] . ∀ x::a . foldr (\x rec -> rec ++ (x:[])) [] [] ++ x: [] = x: [] {Foldr0}
+    ∀ ys::[a] . ∀ x::a .  [] ++ x: [] = x: [] {Foldr0}
+    ∀ ys::[a] . ∀ x::a .  x: [] = x: [] {++0}
+
+P(y:ys) : 
+
+∀ ys::[a] . ∀ x::a . reverse ((y:ys) ++ [x]) = x:reverse (y:ys)
+∀ ys::[a] . ∀ x::a . reverse ( y : (ys ++ [x])) = x:reverse (y:ys) {++1}
+∀ ys::[a] . ∀ x::a . foldr (\x rec -> rec ++ (x:[])) [] ( y : (ys ++ [x])) = x: foldr (\x rec -> rec ++ (x:[])) [] (y:ys) {++1}
+∀ ys::[a] . ∀ x::a . foldr (\x rec -> rec ++ (x:[])) [] (ys ++ [x]) ++ [y] = x: foldr (\x rec -> rec ++ (x:[])) [] (y:ys) {++1}
+∀ ys::[a] . ∀ x::a . foldr (\x rec -> rec ++ (x:[])) [] (ys ++ [x]) ++ [y] = x: foldr (\x rec -> rec ++ (x:[])) [] ys ++ [y] {++1}
+∀ ys::[a] . ∀ x::a . reverse (ys ++ [x]) ++ [y] = x: reverse ys ++ [y] {++1}
+∀ ys::[a] . ∀ x::a . X : reverse ys ++ [y] = x: reverse ys ++ [y] {H.I}
+
+5. 
+
+i. reverse . reverse = id 
+
+Por el Principio de extensionalidad funcional: 
+
+V xs :: [a] . reverse . reverse xs = id xs 
+
+Predicado unario: P(xs): reverse . reverse xs = id xs 
+ 
+C.B xs = [] :
+
+reverse . reverse [] = id []
+reverse (reverse []) = id []  {.}
+reverse (foldr (\x rec -> rec ++ (x:[])) [] []) = id []  {4.1}
+reverse ([]) = id []  {B}
+foldr (\x rec -> rec ++ (x:[])) []  ([]) = id []  {B}
+[] = id []  {B}
+[] =  []  {id}
+
+
+C.I P(xs) -> P(x:xs) : 
+
+reverse . reverse (x:xs) = id (x:xs)
+reverse (reverse (x:xs)) = id (x:xs) {.}
+reverse (foldr (\x rec -> rec ++ (x:[])) [] xs ++ [x]) = id (x:xs) {foldr1}
+reverse (reverse xs ++ [x]) = id (x:xs) {foldr1}
+reverse (reverse [x]) ++ reverse (reverse xs) = id (x:xs) {4.II}
+reverse . reverse [x] ++ reverse . reverse xs = id (x:xs) (.)
+[x] ++ xs = id (x:xs) {H.I}
+x : ([] ++ xs) = id (x:xs) (++1)
+x :  xs = id (x:xs) {++ 0}
+x :  xs =  x:xs {id}
+
+ii. append = (++)
+
+Por el Principio de extensionalidad funcional:
+
+V xs :: [a] . V ys :: [a]. append xs ys = (++) xs ys 
+
+P(xs) :  V ys :: [a]. append xs ys = (++) xs ys 
+
+
+Caso Base: P([]):
+
+V ys :: [a]. append [] ys = (++) [] ys
+V ys :: [a]. append [] ys = (++) [] ys {A0}
+V ys :: [a]. foldr (:) ys [] = (++) [] ys {A0}
+V ys :: [a]. ys  = (++) [] ys {foldr0}
+V ys :: [a]. ys  = ys {++0}
+
+Caso Inductivo: P(xs) -> P(x:xs):
+
+P(x:xs):
+V ys :: [a]. append (x:xs) ys = (++) (x:xs) ys
+V ys :: [a]. foldr (:)  ys (x:xs) = (++) (x:xs) ys {A0}
+V ys :: [a]. x : foldr (:)  ys xs = (++) (x:xs) ys {A0}
+V ys :: [a]. x : append xs ys = (++) (x:xs) ys {A0}
+V ys :: [a]. x : append xs ys = (++) (x:xs) ys {A0}
+V ys :: [a]. x : append xs ys = x : ( xs ++ ys ) {A0}
+V ys :: [a]. x : append xs ys = x : ( append xs  ys ) {HI}
+
+
+.iii
+
+V xs :: [a]. map id xs  = id xs 
+
+P(xs) = map id xs  = id xs 
+
+P([]):
+    map id []  = id []
+    []  = id [] {MAP0}
+    []  = [] {id}
+    
+P(x:xs):
+map id (x:xs)  = id (x:xs)
+id x : map id xs = id (x:xs) {MAP1}
+x : map id xs = (x:xs) {id}
+x : id xs = (x:xs) {HI}
+x : xs = (x:xs) {ID}
+
+
+iv. ∀ f::a->b . ∀ g::b->c . map (g . f) = map g . map f     
+
+P(xs): V xs :: [a]. ∀ f::a->b . ∀ g::b->c . map (g . f) xs  = map g . map f xs 
+
+P([]) : ∀ f::a->b . ∀ g::b->c . map (g . f) []  = map g . map f [] 
+∀ f::a->b . ∀ g::b->c . map (g . f) []  = map g . map f [] 
+∀ f::a->b . ∀ g::b->c .  []  = map g . map f []  {MAP0}
+∀ f::a->b . ∀ g::b->c .  []  = map g (map f [])  {.}
+∀ f::a->b . ∀ g::b->c .  []  = map g []  {map0}
+∀ f::a->b . ∀ g::b->c .  []  = []  {map0} 
+
+
+P(x:xs) :  ∀ f::a->b . ∀ g::b->c . map (g . f) (x:xs)  = map g . map f (x:xs)
+
+∀ f::a->b . ∀ g::b->c .  (g . f) x : map (g . f) xs  = map g . map f (x:xs) {MAP1}
+∀ f::a->b . ∀ g::b->c .  g ( f x) : map (g . f) xs  = map g . map f (x:xs) {.}
+∀ f::a->b . ∀ g::b->c .  g ( f x) : map (g . f) xs  = map g ( map f (x:xs)) {.}
+∀ f::a->b . ∀ g::b->c .  g ( f x) : map (g . f) xs  = map g ( f x : map f xs) {MAP1}
+∀ f::a->b . ∀ g::b->c .  g ( f x) : map (g . f) xs  =  g f x : map g (map f xs) {MAP1}
+∀ f::a->b . ∀ g::b->c .  g ( f x) : map g . map f xs  =  g f x : map g (map f xs) {H.I}
+
+
+
+v) ∀ f::a->b . ∀ p::b->Bool . map f . filter (p . f) = filter p . map f
+
+Por el Principio de extensionalidad funcional: 
+
+V xs :: [a] . ∀ f::a->b . ∀ p::b->Bool . map f . filter (p . f) xs  = filter p . map f xs
+
+P(xs) : ∀ f::a->b . ∀ p::b->Bool . map f . filter (p . f) xs  = filter p . map f xs
+
+P([]): 
+∀ f::a->b . ∀ p::b->Bool . map f . filter (p . f) []  = filter p . map f []
+∀ f::a->b . ∀ p::b->Bool . map f  (filter (p . f) [])  = filter p . map f [] {.}
+∀ f::a->b . ∀ p::b->Bool . map f   []  = filter p . map f [] {filter0}
+∀ f::a->b . ∀ p::b->Bool . []  = filter p . map f [] {map0}
+∀ f::a->b . ∀ p::b->Bool . []  = filter p ( map f []) {.}
+∀ f::a->b . ∀ p::b->Bool . []  = filter p [] {Map0}
+∀ f::a->b . ∀ p::b->Bool . []  = [] {filter0}
+
+
+P(xs) -> P(x:xs)  : 
+
+P(x:xs) : ∀ f::a->b . ∀ p::b->Bool . map f . filter (p . f) (x:xs)  = filter p . map f (x:xs)
+
+∀ f::a->b . ∀ p::b->Bool . map f . filter (p . f) (x:xs)  = filter p (map f (x:xs)) {.}
+∀ f::a->b . ∀ p::b->Bool . map f . filter (p . f) (x:xs)  = filter p (f x : map f xs) {map1}
+∀ f::a->b . ∀ p::b->Bool . map f . filter (p . f) (x:xs)  = filter p (f x : map f xs) {filter1}
+∀ f::a->b . ∀ p::b->Bool . map f . filter (p . f) (x:xs)  = if p (f x) then f x : filter p (map f xs) else filter (map f xs) {filter1}
+
+Por lema de generacion de booleanos, separo en dos casos:
+
+1) p (f x) = True 
+2) p (f x) = False 
+
+1) TODO
+∀ f::a->b . ∀ p::b->Bool . map f . filter (p . f) (x:xs)  =  f x : filter p (map f xs)  {filter1}
+∀ f::a->b . ∀ p::b->Bool . map f  (filter (p . f) (x:xs)) =  f x : filter p (map f xs)  {.}
+∀ f::a->b . ∀ p::b->Bool . map f  (if (p . f) x then  x : filter (p.f) xs else  filter (p.f) xs ) =  f x : filter p (map f xs)  {filter1}
+∀ f::a->b . ∀ p::b->Bool . map f  (if p (f x) then   : filter (p.f) xs else  filter (p.f) xs ) =  f x : filter p (map f xs)  {.}
+∀ f::a->b . ∀ p::b->Bool . map f  (if p ( f x) then   : filter (p.f) xs else  filter (p.f) xs ) =  f x : filter p (map f xs)  {.}
+∀ f::a->b . ∀ p::b->Bool . map f  (x : filter (p.f) xs)  =  f x : filter p (map f xs)  {case}
+∀ f::a->b . ∀ p::b->Bool . f x  : map  f (filter (p.f) xs)  =  f x : filter p (map f xs)  {map1}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
