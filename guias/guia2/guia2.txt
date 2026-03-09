@@ -1,0 +1,174 @@
+Practica N 2 - Razonamiento ecuacional e induccion estructural
+
+-- Ejercicio 1 
+
+i.  ∀ p::(a,b) .intercambiar (intercambiar p) = p
+
+Principio de induccion sobre pares
+
+Si ∀x ::a.∀y ::b.P((x, y)) entonces ∀p ::(a, b).P(p)
+
+Entonces, basta ver que:
+
+Vx :: a. V y:: b . intercambiar (intercambiar (x,y)) = (x,y)
+Vx :: a. V y:: b . intercambiar (y,x) = (x,y) {I0}
+Vx :: a. V y:: b . (x,y) = (x,y) {I0}
+
+ii. ∀ p::(a,(b,c)) .asociarD (asociarI p) = p
+
+Por induccion estructural, basta ver que:
+
+V x :: a . V p :: (b,c) . asociarD (asociarI (x,p)) = (x,p)
+
+Por induccion estructural, basta ver que:
+
+V x :: a. V y :: b . V y z :: c . asociarD (asociarI (x,(y,z))) = (x,(y,z))
+V x :: a. V y :: b . V y z :: c . asociarD ((x,y),z) = (x,(y,z)) {AI}
+V x :: a. V y :: b . V y z :: c . (x,(y,z)) = (x,(y,z)) {AD}
+
+
+
+
+iii. ∀ p::Either a b .espejar (espejar p) = p
+
+Por lema de generacion de sumas:
+
+- o bien ∃ `x :: a`. p = Left x`
+- o bien ∃ `y :: b`. p = Right y`
+
+1er caso: p = Left x 
+
+espejar (espejar (Left x)) = Left x 
+espejar (Right y) = Left x {ELEFT}
+Left x = Left x {eright}
+
+2ndo caso: p = Right y 
+
+espejar (espejar (Right y)) = Right y 
+espejar (Left x) = Right y  {ELEFT}
+Right y = Right y {ERIGHT}
+
+
+iv. ∀ f::a->b->c .∀ x::a .∀ y::b .flip (flip f) x y = f x y
+
+Por el Principio de extensionalidad funcional, basta ver que :
+∀ f::a->b->c .∀ x::a .∀ y::b .flip (flip f) x y = f x y
+∀ f::a->b->c .∀ x::a .∀ y::b . flip f y x = f x y {flip}
+∀ f::a->b->c .∀ x::a .∀ y::b .f x y = f x y {flip}
+
+
+
+v. ∀ f::a->b->c .∀ x::a .∀ y::b .curry (uncurry f) x y = f x y
+∀ f::a->b->c .∀ x::a .∀ y::b . uncurry f (x,y) = f x y {curry}
+∀ f::a->b->c .∀ x::a .∀ y::b . f x y = f x y {uncurry}
+
+
+-- Ejercicio 2
+ 
+i. flip . flip = id
+
+Por el Principio de extensionalidad funcional:
+
+V p :: (a,b) . flip . flip p = id p 
+
+Por induccion sobre pares:
+
+V x :: a . V y :: b . flip . flip (x,y) = id (x,y)
+V x :: a . V y :: b . flip (flip (x,y)) = id (x,y) {.}
+V x :: a . V y :: b . flip (y,x) = id (x,y) {flip}
+V x :: a . V y :: b . (x,y) = id (x,y) {flip}
+V x :: a . V y :: b . (x,y) = (x,y) {id}
+
+ii. ∀ f::(a,b)->c .uncurry (curry f) = f
+
+Por extensionalidad funcional, basta ver que: 
+
+V p :: (a,b) .  ∀ f::(a,b)->c .uncurry (curry f) = f
+
+Por induccion sobre pares, basta ver que:
+
+V x :: a . V y :: b . ∀ f::(a,b)->c . uncurry (curry f) (x,y)= f (x,y)
+V x :: a . V y :: b . ∀ f::(a,b)->c . curry f (x,y)= f (x,y) {uncurry}
+V x :: a . V y :: b . ∀ f::(a,b)->c . f (x,y)= f (x,y) {curry}
+
+
+iii. flip const = const id
+
+Por el Principio de extensionalidad funcional, basta ver que : 
+
+V x :: a . V y :: b . flip const x y = const id x y 
+V x :: a . V y :: b .  const y x = const id x y {flip}
+V x :: a . V y :: b .  y = const id x y {const}
+V x :: a . V y :: b .  y = id y {const}
+V x :: a . V y :: b .  y =  y {id}
+
+iv. ∀ f::a->b .∀ g::b->c .∀ h::c->d .((h . g) . f) = (h . (g . f))
+
+((h.g).f) x = (h.(g.f)) x
+((h.g).f) x
+{D.} = (h.g) (f x)
+{D.} = h (g(f x))
+{D.} = h ((g.f) x)
+{D.} = (h.(g.f)) x
+
+con la definición usual de la comp osición: (.) f g x = f (g x)
+
+-- Ejercicio 3 
+
+Ejercicio 3 ⋆
+Demostrar las siguientes propiedades:
+i. ∀ xs::[a] .length (duplicar xs) = 2 * length xs
+
+Por induccion estructural sobre listaS:
+
+Caso xs = [] : 
+
+∀ xs::[a] .length (duplicar []) = 2 * length []
+∀ xs::[a] .length [] = 2 * length [] {D0}
+∀ xs::[a] . 0 = 2 * length [] {L0}
+∀ xs::[a] . 0 = 2 * 0 {L0}
+∀ xs::[a] . 0 = 0 {*}
+
+
+Caso P(xs) -> P(x:xs) :
+
+∀ xs::[a] .length (duplicar (x:xs)) = 2 * length (x:xs)
+∀ xs::[a] .length (x : x : duplicar xs ) = 2 * length (x:xs) {D1}
+∀ xs::[a] .1 + length ( x : duplicar xs ) = 2 * length (x:xs) {L1}
+∀ xs::[a] .1 + 1 +  length( duplicar xs)  = 2 * length (x:xs) {L1}
+∀ xs::[a] .1 + 1 +  length( duplicar xs)  = 2 * (1 + length xs) {L1}
+∀ xs::[a] .1 + 1 +  length( duplicar xs)  =  2 +  2 * length xs {Distributiva de la *}
+∀ xs::[a] . 2 +  length( duplicar xs)  =  2 +  2 * length xs {+}
+∀ xs::[a] . 2 +  (2 * length xs)  =  2 +  2 * length xs {H.I}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+i i. ∀ xs::[a] .∀ ys::[a] .length (xs ++ ys) = length xs + length ys
+i i i. ∀ xs::[a] .∀ x::a .[x] ++ xs = x:xs
+iv. ∀ xs::[a] .xs ++ [] = xs
+v. ∀ xs::[a] .∀ ys::[a] .∀ zs::[a] .(xs ++ ys) ++ zs = xs ++ (ys ++ zs)
+vi. ∀ xs::[a] .∀ f::(a->b) .length (map f xs) = length xs
+vi i. ∀ xs::[a] .∀ p::a->Bool .∀ e::a .(elem e (filter p xs) ⇒ elem e xs) (si vale Eq a)
+
+
+
+
+
