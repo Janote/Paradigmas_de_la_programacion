@@ -160,6 +160,8 @@ sumaAltv2 xs = fst (foldl f (0, 1) xs)
 
 -- Ejercicio 4
 
+-- partes :: [Int] -> [[Int]]
+-- partes = foldr (\x rec -> )
 -- Ejercicio 5
 
 {--
@@ -211,57 +213,58 @@ recr :: (a -> [a] -> b -> b) -> b -> [a] -> b
 recr _ z [] = z
 recr f z (x : xs) = f x xs (recr f z xs)
 
--- a 
+-- a
 sacarUna :: (Eq a) => a -> [a] -> [a]
 sacarUna e = recr (\x xs rec -> if e == x then xs else x : rec) []
--- b 
-{-- 
-Lo malo de usar recursion estructural (foldr) es que no tenemos acceso a la subestructura de la lista, por lo que eso 
+
+-- b
+{--
+Lo malo de usar recursion estructural (foldr) es que no tenemos acceso a la subestructura de la lista, por lo que eso
 hace que no podamos obtener informacion en cada paso recursivo de la misma, por ende se suele utilizar recursion estructural
-cuando tenemos que hacer proyecciones sin recorrerla completamente. 
+cuando tenemos que hacer proyecciones sin recorrerla completamente.
 --}
 
--- c 
+-- c
 insertarOrdenado :: (Ord a) => a -> [a] -> [a]
 insertarOrdenado e = recr (\x xs rec -> if e < x then e : x : xs else x : rec) [e]
 
--- Ejercicio 7 
+-- Ejercicio 7
 
--- i 
-mapPares :: (a -> b -> c) -> [(a,b)] -> [c]
+-- i
+mapPares :: (a -> b -> c) -> [(a, b)] -> [c]
 mapPares f = map (uncurry f)
 
 -- ii
-armarPares :: [a] -> [b] -> [(a,b)]
-armarPares = foldr (\ x rec ys -> if null ys then rec [] else (x,head ys): rec (tail ys)) (const [])
+armarPares :: [a] -> [b] -> [(a, b)]
+armarPares = foldr (\x rec ys -> if null ys then rec [] else (x, head ys) : rec (tail ys)) (const [])
 
 -- iii
 
 mapDoble :: (a -> b -> c) -> [a] -> [b] -> [c]
-mapDoble f = foldr (\ x rec ys -> f x (head ys) : rec (tail ys)) (const [])
+mapDoble f = foldr (\x rec ys -> f x (head ys) : rec (tail ys)) (const [])
 
 -- Ejercicio 8
 
--- i 
+-- i
 sumaMat :: [[Int]] -> [[Int]] -> [[Int]]
 sumaMat = zipWith sumarFila
 
 sumarFila :: [Int] -> [Int] -> [Int]
 sumarFila = zipWith (+)
 
--- ii TODO 
+-- ii TODO
 
 -- trasponer :: [[Int]] -> [[Int]]
 -- trasponer = foldr (\x rec -> )
 
-
--- Ejercicio 9 
+-- Ejercicio 9
 
 foldNat :: b -> (Integer -> b -> b) -> Integer -> b
 foldNat cBase cN n = case n of
   0 -> cBase
-  n -> cN n (rec (n-1))
-  where rec = foldNat cBase cN
+  n -> cN n (rec (n - 1))
+  where
+    rec = foldNat cBase cN
 
 potencia :: Integer -> Integer -> Integer
 potencia x = foldNat 1 (\y rec -> x * rec)
@@ -269,56 +272,64 @@ potencia x = foldNat 1 (\y rec -> x * rec)
 -- Ejercicio 10
 
 genLista :: a -> (a -> a) -> Integer -> [a]
-genLista initial incremento  cantidad =  foldNat (
-   const []) (\x rec n -> n : rec (incremento n)) cantidad initial
+genLista initial incremento cantidad =
+  foldNat
+    ( const []
+    )
+    (\x rec n -> n : rec (incremento n))
+    cantidad
+    initial
 
 desdeHasta :: Integer -> Integer -> [Integer]
-desdeHasta desde = genLista desde (+1)
+desdeHasta desde = genLista desde (+ 1)
 
 -- Ejercicio 11
 
-data Polinomio a = X | Cte a| Suma (Polinomio a) (Polinomio a) | Prod (Polinomio a) (Polinomio a) deriving Show
+data Polinomio a = X | Cte a | Suma (Polinomio a) (Polinomio a) | Prod (Polinomio a) (Polinomio a) deriving (Show)
 
-foldPolinomio :: b -> (a -> b) -> (b -> b -> b) -> (b -> b -> b) -> Polinomio a -> b 
-foldPolinomio fX fCte fSum fProd poli = case poli of 
-  X -> fX 
-  Cte a -> fCte a 
+foldPolinomio :: b -> (a -> b) -> (b -> b -> b) -> (b -> b -> b) -> Polinomio a -> b
+foldPolinomio fX fCte fSum fProd poli = case poli of
+  X -> fX
+  Cte a -> fCte a
   Suma p q -> fSum (rec p) (rec q)
   Prod p q -> fProd (rec p) (rec q)
-  where rec = foldPolinomio fX fCte fSum fProd
+  where
+    rec = foldPolinomio fX fCte fSum fProd
 
--- Ejercicio 12 
+-- Ejercicio 12
 
-data AB a = Nil | Bin (AB a) a (AB a) deriving Show
+data AB a = Nil | Bin (AB a) a (AB a) deriving (Show)
 
-arbolDePrueba :: AB Int 
+arbolDePrueba :: AB Int
 arbolDePrueba = Bin (Bin Nil 1 Nil) 24 (Bin Nil 5 Nil)
 
 -- i
 
-foldAB :: b -> (b -> a -> b -> b) -> AB a -> b 
+foldAB :: b -> (b -> a -> b -> b) -> AB a -> b
 foldAB fNil fBin arbol = case arbol of
   Nil -> fNil
   Bin i r d -> fBin (rec i) r (rec d)
-  where rec = foldAB fNil fBin
+  where
+    rec = foldAB fNil fBin
 
-recAB :: b -> (AB a -> AB a -> b -> a -> b -> b) -> AB a -> b 
+recAB :: b -> (AB a -> AB a -> b -> a -> b -> b) -> AB a -> b
 recAB fNil fBin arbol = case arbol of
   Nil -> fNil
   Bin i r d -> fBin i d (rec i) r (rec d)
-  where rec = recAB fNil fBin
+  where
+    rec = recAB fNil fBin
 
 -- ii
 
-esNil :: AB a -> Bool 
-esNil arbol = case arbol of 
-  Nil -> True 
-  _ -> False 
+esNil :: AB a -> Bool
+esNil arbol = case arbol of
+  Nil -> True
+  _ -> False
 
-altura :: AB a -> Int 
+altura :: AB a -> Int
 altura = foldAB 0 (\ri _ rd -> 1 + max ri rd)
 
-cantNodos :: AB a -> Int 
+cantNodos :: AB a -> Int
 cantNodos = foldAB 0 (\ri _ rd -> if ri == 0 && rd == 0 then 1 else ri + rd)
 
 -- iii
@@ -329,19 +340,33 @@ mejorSegún criterio (Bin i r d) = foldAB r f (Bin i r d)
     f ri r rd = mejorSegun criterio [ri, r, rd]
 
 -- iv
-esABB :: Ord a => AB a -> Bool
-esABB = recAB True (\i d ri r rd -> ri && rd && todosCumplen (r >=) i && todosCumplen (r<) d)
+esABB :: (Ord a) => AB a -> Bool
+esABB = recAB True (\i d ri r rd -> ri && rd && todosCumplen (r >=) i && todosCumplen (r <) d)
 
 todosCumplen :: (a -> Bool) -> AB a -> Bool
-todosCumplen _ Nil = True 
+todosCumplen _ Nil = True
 todosCumplen criterio (Bin i r d) = foldAB True f (Bin i r d)
   where
-    f ri r rd = ri && criterio r && rd 
+    f ri r rd = ri && criterio r && rd
 
--- v 
+-- v
 {-
 En el inciso 2 y 3 para todos los ejercicios en ningun momento necesito acceder a la subestructura, por lo que usamos foldAB.
 
 En cambio en el 4, si necesito ir chequeando c/ subarbol, por lo que usamos el enfoque primitivo recAB.
 
  -}
+
+-- Ejercicio 21 
+
+listasQueSuman :: Int -> [[Int]]
+listasQueSuman 0 = [[]]
+listasQueSuman n = [x : xs | x <- [1 .. n], xs <- listasQueSuman (n - x)]
+
+todaslasListasFinitas :: [[Int]]
+todaslasListasFinitas = [xs | x <- [1 ..], xs <- listasQueSuman x]
+
+-- Ejercicio 22
+
+data AIH a = Hoja a | Binn (AIH a) (AIH a)
+

@@ -27,10 +27,12 @@ g (x : xs) = . . . x . . . (g xs) . . .
 
 **Toda recursion estructural es una instancia de foldr.**
 
+
+```haskell
 foldr :: (a -> b -> b) -> b -> [a] -> b
 foldr f z [] = z
 foldr f z (x : xs) = f x (foldr f z xs)
-
+```
 
 
 ### Recursion primitiva
@@ -68,9 +70,11 @@ Decimos que la definicion de g esta dada por recursion iterativa si:
 donde ac’ es el acumulador actualizado en funcion de su
 valor anterior y el valor de x.
 
+```haskell
 foldl :: (b -> a -> b) -> b -> [a] -> b
 foldl f ac [] = ac
 foldl f ac (x : xs) = foldl f (f ac x) xs
+```
 
 En general foldr y foldl tienen comportamientos diferentes:
 foldr (⋆) z [a, b, c] = a ⋆ (b ⋆ (c ⋆ z))
@@ -125,3 +129,10 @@ Pero:
 - Sin usar los parámetros del constructor que son de tipo `T`.
 - Sin hacer otros llamados recursivos.
 
+### Funciones Utiles:
+
+```haskell
+foldr1 :: (a -> a -> a) -> [a] -> a
+foldr1 f [x] = x
+foldr1 f (x:xs) = f x (foldr1 f xs)
+```
