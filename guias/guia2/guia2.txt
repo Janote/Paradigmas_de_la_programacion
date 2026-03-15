@@ -883,12 +883,6 @@ elem e (filter xs ys) = elem e xs && elem e ys {h.i}
 
 
 
-
-
-
-
-
-
 v. Eq a => ∀ xs::[a] .∀ ys::[a] .length (union xs ys) = length xs + length ys
 Falso, contraejemplo: 
 Si xs = [1,1,2]
@@ -897,6 +891,46 @@ Si xs = [1,1,2]
 length (union xs ys) = length [1,2,3] = 3 /= length [1,1,2] + length [2,3] /= 5.    
 
 vi. Eq a => ∀ xs::[a] .∀ ys::[a] .length (union xs ys) ≤ length xs + length ys
+
+Defino el predicado unario P(xs) : 
+
+P(xs) : ∀ ys::[a] .length (union xs ys) ≤ length xs + length ys
+
+P([]):
+∀ ys::[a] .length (union [] ys) ≤ length [] + length ys
+∀ ys::[a] .length (nub ([] ++ ys)) ≤ length [] + length ys {u0}
+∀ ys::[a] .length (nub ys) ≤ length [] + length ys {++0}
+∀ ys::[a] .length (nub ys) ≤ 0 + length ys {L0}
+∀ ys::[a] .length (nub ys) ≤ length ys {+} {LEMA}
+
+
+P(x:xs) : 
+∀ ys::[a] .length (union (x:xs) ys) ≤ length (x:xs) + length ys
+∀ ys::[a] .length (nub ((x:xs)++ys)) ≤ length (x:xs) + length ys
+∀ ys::[a] .length (x : filter (\y -> x /= y )(nub (xs++ys))) ≤ length (x:xs) + length ys
+∀ ys::[a] .1 + length ( filter (\y -> x /= y )(nub (xs++ys))) ≤ length (x:xs) + length ys
+∀ ys::[a] .1 + length ( filter (\y -> x /= y )(nub (xs++ys))) ≤ length (x:xs) + length ys
+∀ ys::[a] .length ( filter (\y -> x /= y )(union (xs ys))) ≤  length xs + length ys
+
+Sabemos el lema:
+
+length (filter p xs) ≤ length xs
+
+a = length (filter (\y -> x /= y) (union xs ys))
+b = length (union xs ys)
+c = length xs + length ys
+
+a ≤ b          {lema filter}
+b ≤ c          {H.I}
+⇒ a ≤ c        {transitividad}
+length (union (xs ys)) <= length xs + length ys {H.I}
+
+
+
+
+
+
+
 
 
 
