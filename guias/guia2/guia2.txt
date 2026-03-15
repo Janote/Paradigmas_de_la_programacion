@@ -548,6 +548,363 @@ Por lema de generacion de booleanos, separo en dos casos:
 
 
 
+vi i. ∀ xs::[a] .∀ e::a .(elem e xs ⇒ e ≤ maximum xs) (si vale Ord a), donde:
+maximum :: Ord a => [a] -> a
+{M0} maximum [x] = x
+{M1} maximum (x:y:xs) = max x (maximum (y:xs))
+
+
+Por induccion estructural, defino el predicado unario:
+P(xs) : ∀ e::a .(elem e xs ⇒ e ≤ maximum xs)
+
+Caso base P([]):
+
+elem e [] -> e <= maximum []
+False -> e <= maximum [] {elemFalse}
+True 
+
+Caso Inductivo
+P(xs) -> P(x:xs) : 
+
+P(x:xs): 
+
+elem e (x:xs) -> e <= maximum (x:xs)
+e == x || elem e xs -> e <= maximum (x:xs) {elem1}
+
+Por lema de generacion de booleanos, separo en 2 casos: 
+
+Caso e = x: 
+
+True || elem e xs -> e <= maximum (x:xs) {case}
+True -> e <= maximum (x:xs) {||}
+
+Por lema de generacion de listas, separo en 2 casos xs : 
+
+xs = [] 
+xs = E y :: a . E ys :: [a]. (y:ys) 
+
+Si xs = [] : 
+
+True -> e <= maximum [x] {case}
+True -> e <= x {case}
+True -> True {case}
+True
+
+Si xs = (y:ys) : 
+
+True -> e <= maximum (x:(y:ys))
+True -> e <= max x (maximum (y:ys))
+True -> e <= max e (maximum (y:ys)) {x == e}
+True -> True {aritm}
+
+Caso e != x : 
+
+False || elem e xs -> e <= maximum (x:xs) {case}
+elem e xs -> e <= maximum (x:xs) {||}
+
+Por lema de generacion de listas, separo en 2 casos xs : 
+
+xs = [] 
+xs = V y :: a . V ys :: [a]. (y:ys) 
+
+xs = [] : 
+
+elem e [] -> e <= maximum (x:[]) {||}
+False -> e <= maximum [x] {case}
+True {->}
+
+
+xs = (y:ys) : 
+
+elem e (y:ys) -> e <= maximum (x:(y:ys)) {case}
+elem e (y:ys) -> e <= max x (maximum (y:ys)) {case}
+
+Por lema de generacion de booleanos, separo en dos casos: 
+
+1. max x (maximum (y:ys)) = x 
+2. max x (maximum (y:ys)) = (maximum (y:ys))
+
+
+1. 
+
+elem e xs -> e <= x {Recorda que xs = (y:ys)}
+
+Por lema de generacion de booleanos, tenemos dos casos: 
+
+e <= x : 
+elem e xs -> True {case}
+True {->}
+
+e > x :  Este caso no tiene sentido ya que si el maximo del resto de la lista es  x, y e esta en el resto de la lista, no tiene sentido que reduzca a eso.
+
+2. elem e (y:ys) -> e <= maximum (y:ys)
+elem e xs -> e <= maximum xs {alpha-renombre}
+[H.I]
+
+-- PREGUNTAR, NO ME GUSTO COMO LO CERRE. 
+
+
+-- Ejercicio 6 
+
+Dadas las siguientes funciones:
+zip :: [a] -> [b] -> [(a,b)]
+{Z0} zip = foldr (\x rec ys -> if null ys then [] else (x, head ys) : rec (tail ys)) (const [])
+zip' :: [a] -> [b] -> [(a,b)]
+{Z'0} zip' [] ys = []
+{Z'1} zip' (x:xs) ys = if null ys then [] else (x, head ys):zip' xs (tail ys)
+Demostrar que zip = zip' utilizando inducción estructural y el principio de extensionalidad.
+
+Por el principio de extensionalidad funcional, basta ver que:
+
+Vxs :: [a] . V ys :: [b]. zip xs ys = zip' xs ys 
+
+Defino el predicado unario : 
+P(xs) =  V ys :: [b]. zip xs ys = zip' xs ys 
+
+
+Caso base: xs = [] 
+
+P([]):
+
+zip [] ys = zip' [] ys
+zip [] ys = [] {Z'0}
+foldr (\x rec ys -> if null ys then [] else (x, head ys) : rec (tail ys)) (const []) ys = [] {Z0}
+const [] ys = [] {foldr0}
+[] = [] {const}
+
+
+P(x:xs) : 
+
+zip (x:xs) ys = zip' (x:xs) ys 
+zip (x:xs) ys = if null ys then [] else (x,head ys) : zip' xs (tail ys)
+
+Por extensionalidad funcional sobre listas, separo a ys en dos casos :
+
+1. ys = []
+2. E z :: b . E zs :: [b] . ys = (z:zs)
+
+Caso 1. 
+zip (x:xs) [] = if null ys then [] else (x,head ys) : zip' xs (tail ys) {case}
+zip (x:xs) [] =  [] {if-true}
+foldr (\x rec ys -> if null ys then [] else (x, head ys) : rec (tail ys)) (const []) [] = [] {z0}
+[] = [] {foldr1+case}
+
+
+Caso 2. 
+
+
+zip (x:xs) ys = if null (z:zs) then [] else (x,head (z:zs)) : zip' xs (tail (z:zs))
+zip (x:xs) ys = (x,head (z:zs)) : zip' xs (tail (z:zs)) {if-false}
+zip (x:xs) (z:zs) = (x,z) : zip' xs (tail (z:zs)) {head}
+zip (x:xs) (z:zs) = (x,z) : zip' xs (zs) {tail}
+foldr (\x rec ys -> if null ys then [] else (x, head ys) : rec (tail ys)) (const []) (z:zs) = (x,z) : zip' xs zs  {z1}
+(x, head (z:zs)) : foldr (\ ..) (const []) zs = (x,z) : zip' xs zs 
+(x, z) : foldr (\ ..) (const []) zs = (x,z) : zip' xs zs 
+(x,z) : zip' xs zs = (x,z) : zip' xs zs {H.I}
+
+
+-- Ejercicio 7. 
+
+
+i. Eq a => ∀ xs::[a] .∀ e::a .∀ p::a -> Bool .elem e xs && p e = elem e (filter p xs)
+
+Defino el predicado unario: 
+
+P(xs) : ∀ e::a .∀ p::a -> Bool .elem e xs && p e = elem e (filter p xs)
+
+P([]):
+elem e [] && p e = elem e (filter p [])
+false && p e = elem e (filter p []) {ELEM0}
+false = elem e (filter p []) {&&}
+false = elem e (foldr ((\x rec) -> if p x then x: rec else rec) [] []) {filter0}
+false = elem e [] {foldr0}
+false = false {elem0}
+
+P(x:xs) : 
+elem e (x:xs) && p e = elem e (filter p (x:xs))
+e == x || elem e xs && p e =  elem e (filter p (x:xs)) {elem1}
+
+Por lema de generacion de booleanos, separo en 2 casos: 
+
+e == x : 
+
+True || elem e xs && p e  = elem e (filter p (x:xs)) {case}
+True && p e =  elem e (filter p (x:xs)) {||}
+p e =  elem e (filter p (x:xs)) {&&}
+
+Por lema de generacion de booleanos, separo en dos casos: 
+
+1. p e  = True 
+2. p e = False 
+
+1. 
+True = elem e (filter p (e:xs)) {case}
+True = elem e (foldr ((\x rec) -> if p x then x: rec else rec) [] (e:xs))
+True = elem e (foldr ((\x rec) -> if p e then e: (foldr (\x rec -> if p x then x : rec else rec) [] xs)  else (foldr (\x rec -> if p x then x : rec else rec) [] xs)) [] (x:xs))
+True = elem e (e: (foldr (\x rec -> if p x then x : rec else rec) [] xs)) {case}
+True = e == e || elem (foldr (\x rec -> if p x then x : rec else rec) [] xs) {elem1}
+True = True || elem (foldr (\x rec -> if p x then x : rec else rec) [] xs) {==}
+True = True {||}
+
+
+2. p e = False 
+
+p e  = elem e (filter p (e:xs)) {case}
+False = elem e (foldr ((\x rec) -> if p x then x: rec else rec) [] (e:xs))
+p e  = elem e (foldr ((\x rec) -> if p e then e: (foldr (\x rec -> if p x then x : rec else rec) [] xs)  else (foldr (\x rec -> if p x then x : rec else rec) [] xs)) [] (x:xs))
+p e  = elem e (foldr (\x rec -> if p x then x : rec else rec) [] xs) {case}
+p e  = elem e (filter p xs) {H.I}
+
+
+Caso e != x : 
+
+e == x || elem e xs && p e =  elem e (filter p (x:xs)) {elem1}
+elem e xs && p e =  elem e (filter p (x:xs))
+elem e xs && p e =  elem e (if p x then x : filter p xs else filter p xs)
+
+Caso p x = True: 
+
+elem e xs && p e =  elem e ( x: filter p xs)
+elem e xs && p e =  e == x || elem e (filter p xs)
+elem e xs && p e =   elem e (filter p xs) {H.I}
+
+Caso p x = False : 
+elem e xs && p e = elem e (filter p xs) {H.I}
+
+
+ii. Eq a => ∀ xs::[a] .∀ e::a .elem e xs = elem e (nub xs)
+
+
+Defino el predicado unario P(xs) : ∀ e::a .elem e xs = elem e (nub xs)
+
+P([]):
+
+elem e [] = elem e (nub [])
+False = elem e [] 
+False = False 
+
+P(x:xs) = 
+elem e (x:xs) = elem e (nub (x:xs))
+e == x || elem e xs = elem e (nub (x:xs))
+
+
+1. e = x : 
+
+True =  elem e (nub (x:xs))
+True =  elem e (x : filter (\y -> x /= y) (nub xs))
+True = e == x || filter .. .
+True = True 
+
+2. e != x : 
+
+elem e xs = elem e (nub (x:xs))
+elem e xs = elem e (x : filter (\y -> x /= y) (nub xs))
+elem e xs = e == x || elem e (nub xs)
+elem e xs = elem e (nub xs)
+H.I
+
+iii. Eq a => ∀ xs::[a] .∀ ys::[a] .∀ e::a .elem e (union xs ys) = (elem e xs) || (elem e ys)
+
+P(xs) : ∀ ys::[a] .∀ e::a .elem e (union xs ys) = (elem e xs) || (elem e ys)
+
+P([]) : 
+elem e (union [] ys)  =  (elem e xs) || (elem e ys)
+elem e (nub ([] ++ ys)) = (elem e xs) || (elem e ys)
+elem e (nub ys) = elem e [] || elem e ys 
+elem e (nub ys) = elem e ys  {ii}
+
+P(x:xs): 
+elem e (union (x:xs) ys)  =  (elem e (x:xs)) || (elem e ys)
+elem e (union (x:xs) ys)  =  (e == x) || elem e xs || (elem e ys)
+
+e == x: 
+
+elem e (union (x:xs) ys)  =  True || elem e xs || (elem e ys)
+elem e (union (x:xs) ys)  =  True 
+elem e (nub ((x:xs)++ys)) = True 
+elem e (nub (x: (xs++ys))) = True
+elem e (x : nub (xs++ys)) = True
+e == x || elem e (nub (xs++ys)) = True 
+True = True 
+
+
+e != x : 
+
+elem e (union (x:xs) ys)  =  False || elem e xs || (elem e ys)
+elem e (union (x:xs) ys)  =   elem e xs || (elem e ys)
+elem e (nub ((x:xs)++ys)) =  elem e xs || (elem e ys) 
+elem e (nub (x: (xs++ys))) =  elem e xs || (elem e ys)
+elem e (x : nub (xs++ys)) =  elem e xs || (elem e ys)
+elem e (nub (xs++ys)) =  elem e xs || (elem e ys) [H.I]
+
+
+
+iv. Eq a => ∀xs::[a] .∀ys::[a] .∀e::a .elem e (intersect xs ys) = (elem e xs) && (elem e ys)
+
+P(xs) : ∀ys::[a] .∀e::a .elem e (intersect xs ys) = (elem e xs) && (elem e ys)
+
+P([]):
+elem e (intersect [] ys) = elem e [] && elem e ys 
+elem e (filter (\e -> elem e ys) []) = False && elem e ys 
+elem e [] = False && elem e ys 
+False = False 
+
+
+P(x:xs) :
+
+∀e::a .elem e (intersect (x:xs) ys) = (elem e (x:xs)) && (elem e ys)
+
+elem e (intersect (x:xs) ys) = elem e (x:xs) && elem e ys 
+elem e (filter (\e -> elem e ys) (x:xs)) = elem e (x:xs) && elem e ys 
+elem e (if elem x ys then x : filter (\e -> elem e ys) xs else filter (\e -> elem e ys)) = elem e (x:xs) && elem e ys
+
+Por ext de booleanos, separo en casos: 
+1. elem e ys = True
+2. elem e ys = False
+
+
+1. elem e (x : filter (\e -> elem e ys) sx) = elem e (x:xs) && elem e ys 
+
+Separo en casos: e == x && e != x : 
+
+e == x : 
+
+True || .. = True .. && elem e ys 
+True = elem e ys {Vale por case y que e = x }
+
+e != x : 
+
+elem e (filter (\e -> elem e ys) sx) = elem e (x:xs) && elem e ys 
+elem e (filter xs ys) = elem e xs && elem e ys {h.i}
+
+2. elem e ys = False : 
+elem e (filter xs ys) = elem e xs && elem e ys {h.i}
+
+
+
+
+
+
+
+
+
+
+v. Eq a => ∀ xs::[a] .∀ ys::[a] .length (union xs ys) = length xs + length ys
+Falso, contraejemplo: 
+Si xs = [1,1,2]
+   ys = [2,3]
+
+length (union xs ys) = length [1,2,3] = 3 /= length [1,1,2] + length [2,3] /= 5.    
+
+vi. Eq a => ∀ xs::[a] .∀ ys::[a] .length (union xs ys) ≤ length xs + length ys
+
+
+
+
+
+
+
+
 
 
 
