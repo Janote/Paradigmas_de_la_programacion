@@ -900,10 +900,46 @@ vi. Eq a => ∀ xs::[a] .∀ ys::[a] .length (union xs ys) ≤ length xs + lengt
 
 
 
+-- Ejercicio 8 
+
+i. ∀ f::a->b->b .∀ z::b .∀ xs, ys::[a] .foldr f z (xs ++ ys) = foldr f (foldr f z ys) xs
+
+Defino el predicado unario 
+
+P(xs) : V F ::  a -> b -> b . V ys::[a] .foldr f z (xs ++ ys) = foldr f (foldr f z ys) xs
+
+cb P([]) :
+
+foldr f z ([] ++ ys) = foldr f (foldr f z ys) [] 
+foldr f z ys = foldr f (foldr f z ys) []  {++0}
+foldr f z ys = foldr f z ys  {foldr0}
+
+C.Inductivo P(x:xs):
+
+foldr f z ((x:xs) ++ ys) = foldr f (foldr f z ys) (x:xs)
+foldr f z (x : (xs ++ ys)) = foldr f (foldr f z ys) (x:xs) {++1}
+f x (foldr f z (xs ++ ys)) = foldr f (foldr f z ys) (x:xs) {++1}
+f x (foldr f z (xs ++ ys)) = f x (foldr f (foldr f z ys) xs) {++1}
+f x (foldr f (foldr f z ys) xs) = f x (foldr f (foldr f z ys) xs) {H.I}
 
 
+ii. ∀ f::b->a->b .∀ z::b .∀ xs, ys::[a] .foldl f z (xs ++ ys) = foldl f (foldl f z xs) ys
 
 
+P(xs) : ∀ f::b->a->b .∀ z::b .∀  ys::[a] .foldl f z (xs ++ ys) = foldl f (foldl f z xs) ys
+
+P([]): foldl f z ([] ++ ys) = foldl f (foldl f z []) ys
+foldl f z ys = foldl f (foldl f z []) ys {++0}
+foldl f z ys = foldl f z ys {foldl0}
+
+
+P(x:xs) : 
+
+foldl f z ((x:xs) ++ ys) = foldl f (foldl f z (x:xs)) ys
+foldl f z (x : ( xs ++ ys)) = foldl f (foldl f z (x:xs)) ys {++1}
+foldl f (f z x)  ( xs ++ ys) = foldl f (foldl f z (x:xs)) ys {foldl1}
+foldl f (f z x)  ( xs ++ ys) = foldl f (foldl f (f z x)  xs) ys {foldl1}
+foldl f (foldl f (f z x) xs) ys = foldl f (foldl f (f z x)  xs) ys {H.I}
 
 
 
