@@ -1,0 +1,120 @@
+Ejercicio 1 ⋆
+Determinar qué expresiones son sintácticamente válidas (es decir, pueden ser generadas con las gramáticas
+presentadas) y determinar a qué categoría pertenecen (expresiones de términos o expresiones de tipos):
+a) x
+expresion de termino.
+b) x x
+expresion de termino.
+c) M
+No es sintácticamente valida.
+d) M M
+No es sintácticamente valida.
+e) true false
+expresion de termino.
+f) true succ(false true)
+expresion de termino.
+g) λx.isZero(x)
+expresion de termino.
+h) λx : σ. succ(x)
+expresion de termino.
+i) λx : Bool. succ(x)
+expresion de termino.
+j) λx : if true then Bool else Nat. x
+expresion de termino.
+k) σ
+No es sintácticamente valida.
+l) Bool
+expresiones de tipos
+m) Bool → Bool
+expresiones de tipos
+n) Bool → Bool → Nat
+expresiones de tipos
+ñ) (Bool → Bool) → Nat
+expresiones de tipos
+o) succ true
+expresiones de termino
+p) λx : Bool. if zero then true else zero succ(true)
+expresiones de termino
+
+Ejercicio 2 
+λ x : t . if x true then false zero else succ(pred(x)) isZero(false)
+
+Ejercicio 3 :
+Las que estan en comillas "" son las marcadas.
+λx : Nat. succ((λx : Nat. x) "x")
+
+b) Ocurre x1 como subtérmino en λx1 : Nat. succ(x2)? NO 
+
+c) Ocurre x (y z) como subtérmino en u x (y z) ?
+Acordate que la aplicacion es asociativa a izquierda, existe un camino posible, por lo que SI.
+
+Ejercicio 4
+Para los siguientes términos:
+
+i) Insertar todos los paréntesis de acuerdo a la convención usual.
+
+a) u x (y z) (λv : Bool. v y)
+
+(((u x) (y z)) (λv : Bool. v y))
+
+b) (λx : Bool → Nat → Bool. λy : Bool → Nat. λz : Bool. (x z) (y z)) u v w
+
+(((λx : Bool → Nat → Bool. λy : Bool → Nat. λz : Bool. (x z) (y z)) u) v) w
+
+c) w (λx : Bool → Nat → Bool. λy : Bool → Nat. λz : Bool. (x z) (y z)) u v
+
+((w (λx : Bool → Nat → Bool. λy : Bool → Nat. λz : Bool. (x z) (y z))) u) v
+
+ii Dibujar el árbol sintáctico de cada una de las expresiones.
+                        ---------------------------------------------|
+                (((u x) (y z)) (λv : Bool. v y)) "u x y z libres (y la de la izq)"
+                |                   |
+    ((u x) (y z))                (λv : Bool. v y)
+    | |     | |                     |
+    u x     y z                    v y 
+                                  |    |
+                                  v    y 
+
+ 
+            (((λx : Bool → Nat → Bool. λy : Bool → Nat. λz : Bool. (x z) (y z)) u) v) w "u, v, w libres"
+            |                                                                   |
+((λx : Bool → Nat → Bool. λy : Bool → Nat. λz : Bool. (x z) (y z)) u) v           w
+            |                                                        |
+((λx : Bool → Nat → Bool. λy : Bool → Nat. λz : Bool. (x z) (y z)) u)  v
+            |                                                     |
+(λx : Bool → Nat → Bool. λy : Bool → Nat. λz : Bool. (x z) (y z))   u         
+            |
+ λy : Bool → Nat. λz : Bool. (x z) (y z)
+            |            
+ λz : Bool. (x z) (y z)
+            |
+        (x z) (y z)
+        |       |
+        x z    y z 
+        | |    | | 
+        x z    y z 
+    
+c) ((w (λx : Bool → Nat → Bool. λy : Bool → Nat. λz : Bool. x z (y z)) u) v) "w, u, v libres"
+    |                                                                      |
+(w (λx : Bool → Nat → Bool. λy : Bool → Nat. λz : Bool. x z (y z)) u)      v 
+    |                                                                |
+(w (λx : Bool → Nat → Bool. λy : Bool → Nat. λz : Bool. x z (y z)))   u 
+    |                                   |
+    w                              (λx : Bool → Nat → Bool. λy : Bool → Nat. λz : Bool. x z (y z))
+                                        |
+                                     λy : Bool → Nat. λz : Bool. x z (y z)
+                                        |
+                                     λz : Bool. x z (y z)
+                                        |
+                                        (x z) (y z)
+                                       |      | 
+                                       x z   y z 
+                                       | |   | | 
+                                       x z   y z 
+Se pide:
+
+iv ¾En cuál o cuáles de los términos anteriores ocurre la siguiente expresión como subtérmino?
+(λx : Bool → Nat → Bool. λy : Bool → Nat. λz : Bool. (x z) (y z)) u En el b)
+
+
+
