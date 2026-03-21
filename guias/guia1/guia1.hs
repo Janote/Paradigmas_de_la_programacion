@@ -370,3 +370,7 @@ todaslasListasFinitas = [xs | x <- [1 ..], xs <- listasQueSuman x]
 
 data AIH a = Hoja a | Binn (AIH a) (AIH a)
 
+alt f g [] = [] 
+alt f g (x:xs) = f x : alt g f xs
+
+a g1 g2 f1 f2 xs  = alt g1 g2 . alt f1 f2 xs

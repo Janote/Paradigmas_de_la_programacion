@@ -117,4 +117,113 @@ iv ¾En cuál o cuáles de los términos anteriores ocurre la siguiente expresi�
 (λx : Bool → Nat → Bool. λy : Bool → Nat. λz : Bool. (x z) (y z)) u En el b)
 
 
+-- Ejercicio 5 
+
+true false 
+
+-- Ejercicio 6 
+Dar una derivación o explicar por qué no es posible dar una derivación para cada uno de los siguientes juicios de tipado:
+a) ⊢ if true then zero else succ(zero) : Nat
+                                        ------------------T-Zero 
+                                        ⊢ zero : Nat 
+  -----------T-Bool -----------T-Zero   ------------------T-Succ
+  ⊢ true : Bool     ⊢ zero : Nat        ⊢ succ(zero) : Nat 
+------------------------------------------- T-IF 
+ ⊢ if true then zero else succ(zero) : Nat
+
+b) x : Nat, y : Bool ⊢ if true then false else (λz : Bool. z) true : Bool
+                                                                            -------------------------------T-Var
+                                                                            x : Nat, y : Bool, z : Bool ⊢ z : Bool 
+                                                                            -------------------------------------------------T-Abs          --------------------------------T-true  
+                                                                            x : Nat, y : Bool ⊢ (λz : Bool. z) : Bool -> Bool            x : Nat, y : Bool ⊢ true : Bool  
+------------------------------T-true ------------------------------T-false  ------------------------------------------------------------------T-APP
+ x : Nat, y : Bool ⊢ true : Bool   x : Nat, y : Bool ⊢ false : Bool         x : Nat, y : Bool ⊢ (λz : Bool. z) true
+------------------------------------------------------------------------------------------------------------T-IF
+ x : Nat, y : Bool ⊢ if true then false else (λz : Bool. z) true : Bool
+
+c) ⊢ if λx : Bool. x then zero else succ(zero) : Nat
+------------T-var                           ----------T-zero
+x : Bool ⊢ x                                ⊢ zero : Nat     
+--------------T-abs     ------------T-zero  --------------T-succ
+⊢ λx : Bool. x          ⊢ zero : Nat        ⊢ succ(zero) : Nat     
+--------------------------------------------------------------------------------------------------T-IF
+⊢ if λx : Bool. x then zero else succ(zero) : Nat
+
+
+d) x : Bool → Nat, y : Bool ⊢ x y : Nat
+
+-----------------------------------------T-Var      -------------------------------------T-Var
+x : Bool → Nat, y : Bool ⊢ x : Bool -> Nat     x : Bool → Nat, y : Bool ⊢ y : Bool 
+-------------------------------------------------------------------T-App 
+x : Bool → Nat, y : Bool ⊢ x y : Nat
+
+Ejercicio 7 
+Exhibir un juicio de tipado que sea derivable en el sistema original pero que no lo sea en el sistema actual
+
+
+
+-------------------------------------------------------- T-CAGUE 
+ |-  x : Nat 
+-------------------------------------------------------- ->i2 
+|- λ x : Nat -> Nat . x : Nat -> Nat 
+
+En cambio en nuestro sistema. 
+
+
+
+-------------------------------------------------------- T-Var  
+x : Nat  |- x : Nat    
+--------------------------------------------------------  T-Abs
+|- λ x : Nat -> Nat . x : Nat -> Nat 
+
+Ejercicio 8
+Determinar qué tipo representa σ en cada uno de los siguientes juicios de tipado.
+a) 
+
+σ = NAT. 
+
+⊢ zero : σ
+---------------------------T-Zero 
+⊢ succ(zero) : σ
+
+
+b) 
+
+
+Para seguir derivando, σ = Bool 
+----------------------------T-isZero
+⊢ isZero(succ(zero)) : σ
+
+
+
+c) 
+                ------------T-false -----------T- false ; Beta = Bool               -----------T-zero <-> σ = Nat
+⊢ true : Bool  ⊢ false : Beta  ⊢ false : Beta                                       |- zero : σ 
+-----------------------------------T-If      -----------T-zero <-> σ = Nat          --------------T-succ 
+⊢ (if true then false else false) : Bool     ⊢ zero : σ                             |- succ(zero) : σ
+------------------------------------------------------------------------------------------------------------------T-If 
+⊢ if (if true then false else false) then zero else succ(zero) : σ
+
+
+
+
+Ejercicio 9 (Tipos habitados) ⋆
+Decimos que un tipo τ está habitado si existe un término M tal que el juicio ⊢ M : τ es derivable. En ese caso,
+decimos que M es un habitante de τ . Por ejemplo, dado un tipo σ, la identidad λx : σ. x es un habitante del
+tipo σ → σ. Demostrar que los siguientes tipos están habitados (para cualquier σ, τ y ρ):
+a) σ → τ → σ
+M = λ x : σ . λ y: t . x  (CONST )
+b) (σ → τ → ρ) → (σ → τ ) → σ → ρ
+M = λ f : (σ → τ → ρ) . λ g: σ → τ . λ n : σ . f x (g x)
+c) (σ → τ → ρ) → τ → σ → ρ
+M = λ f : (σ → τ → ρ) . λ x: τ . λ y : σ . f y x  {FLIP}
+
+d) (τ → ρ) → (σ → τ ) → σ → ρ
+M = λ f : (τ → ρ) . λ g: (σ → τ ) . λ x : σ . f (g x)  {.}
+
+
+Ejercicio 10 : Me rindo, lo voy a hacer en papel. 
+
+
+
 
