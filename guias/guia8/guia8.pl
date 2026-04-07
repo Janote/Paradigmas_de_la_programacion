@@ -121,3 +121,35 @@ aBBInsertar(X,nil,bin(nil,X,nil)).
 aBBInsertar(X,bin(I,R,D),bin(M,R,D)) :- X =< R, aBBInsertar(X,I,M).
 aBBInsertar(X,bin(I,R,D),bin(I,R,M)) :- X > R, aBBInsertar(X,D,M).
 
+
+%% Ejercicio 13
+
+coprimos(X,Y) :- desde(1,X), between(1,X,Y), 1 is gcd(X,Y).
+
+%% Ejercicio 14 
+
+%% i 
+
+cuadradoSemiMagico(N,XS) :- desde(0,S), generarMatrizMN(N,N,XS), cadaUnaSumaS(XS,S).
+
+% genera una matriz de M filas por N columnas.
+generarMatrizMN(_,0,[]).
+generarMatrizMN(M,N,[X|XS]) :-  N > 0, length(X,M), N1 is N - 1 , generarMatrizMN(M,N1,XS).
+
+cadaUnaSumaS([],_).
+cadaUnaSumaS([X|XS],S) :- sumaS(X,S), cadaUnaSumaS(XS,S).
+
+sumaS([],0).
+sumaS([X|XS],S) :- between(0,S,X), Resto is S - X , sumaS(XS,Resto).
+
+%% ii 
+cuadradoMagico(N,XS) :- N > 0 , cuadradoSemiMagico(N,XS), columnasSumanLoMismo(XS).
+
+
+columnasSumanLoMismo(XS) :- length(X,N), columnaSumaLoMismo(0,N,XS).
+
+columnaSumaLoMismo(N,N,_).
+columnaSumaLoMismo(I,N,XS) :- I < N, columnaI(I,XS,C), sumlist(C,S), I1 is I + 1 ,
+                              columnaSumaLoMismo(I1,N,XS), 
+
+columnaI(0,XS,C) :- obtenerColumna(0,XS).                              
