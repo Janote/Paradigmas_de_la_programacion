@@ -145,11 +145,108 @@ sumaS([X|XS],S) :- between(0,S,X), Resto is S - X , sumaS(XS,Resto).
 %% ii 
 cuadradoMagico(N,XS) :- N > 0 , cuadradoSemiMagico(N,XS), columnasSumanLoMismo(XS).
 
+columnasSumanLoMismo([X|XS]) :- length(X,L), L1 is L - 1, between(0,L1,I), chequearColumnas(I,L1,[X|XS]). 
 
-columnasSumanLoMismo(XS) :- length(X,N), columnaSumaLoMismo(0,N,XS).
 
-columnaSumaLoMismo(N,N,_).
-columnaSumaLoMismo(I,N,XS) :- I < N, columnaI(I,XS,C), sumlist(C,S), I1 is I + 1 ,
-                              columnaSumaLoMismo(I1,N,XS), 
+obtener_columna([], _, []).
+obtener_columna([Fila | Resto], I, [Elem | Col]) :-
+    nth0(I, Fila, Elem),
+    obtener_columna(Resto, I, Col).
 
-columnaI(0,XS,C) :- obtenerColumna(0,XS).                              
+
+esTriangulo(tri(A,B,C)) :-
+    A > 0, B > 0, C > 0,
+    A+B > C, A+C > B, B+C > A.
+
+
+perimetro(T,P) :-  \+ var(P), generarTrianguloDePerimetro(T,P).
+perimetro(T,P) :-   var(P), desde(3,P), generarTrianguloDePerimetro(T,P).
+
+
+
+triangulo(T) :- desde(3,P), generarTrianguloDePerimetro(T,P), esTriangulo(T).
+
+
+generarTrianguloDePerimetro(tri(A,B,C),P) :- between(1,P,A), Dif is P - A, between(1,Dif,B), C is Dif - B, C > 0, esTriangulo(tri(A,B,C)).
+
+
+%% Ejercicios de Parcial.
+unCorte(L,L1,L2,D) :- append(L1,L2,L), sumlist(L1,S1), sumlist(L2,S2), D is abs(S1-S2).
+
+corteMasParejo(L, L1, L2) :- unCorte(L,L1,L2,D), not((unCorte(L,_,_,D2), D2 < D)).
+
+
+
+proximoNumeroPoderoso(X,Y) :- buscarPoderoso(X,Y) , !.
+
+buscarPoderoso(X,Y) :- X1 is X + 1, desde(X1,Y), esPoderoso(Y).
+
+
+esPoderoso(Y):- \+ (between(1,Y,I),esPrimo(I),0 is Y mod I, \+ (0 is Y mod (I * I))).
+
+esPrimo(2).
+esPrimo(X) :- X > 2, X1 is X - 1,  not((between(2,X1,I), 0 is X mod I)).
+
+
+listaAmelodia([X],X).
+listaAmelodia(XS,sec(N,M)) :- XS \= [], append(PF,SF,XS), length(PF,L1), length(SF,L2), L1 > 0 , L2 > 0, listaAmelodia(PF,N),  listaAmelodia(SF,M).
+
+submelodia(sec(M1,M2),sec(M1,M2)).
+submelodia(sec(M1,_),R) :- submelodia(M1,R).
+submelodia(sec(_,M1),R) :- submelodia(M1,R).
+
+sinSubmelodiasEnComun(M1,M2) :- not((submelodia(M2,S2), submelodia(M1,S2))).
+
+nota(do).
+nota(re).
+
+
+melodia(M) :- desde(1,N), melodiasDeLargoN(N,M).
+
+melodiasDeLargoN(1,M) :- nota(M).
+melodiasDeLargoN(N,sec(M1,M2)) :- N > 1, between(1,N,L) , Resto is N - L, Resto > 0, melodiasDeLargoN(L,M1), melodiasDeLargoN(Resto,M2).  
+
+
+secuenciaRepetida([X|XS],S) :- sublista(S,X), S \= [], esSubsecuenciaDelResto(S,XS).
+
+esSubsecuenciaDelResto(_,[]).
+esSubsecuenciaDelResto(S,[X|XS]) :- sublista(S,X), esSubsecuenciaDelResto(S,XS).
+
+
+secuenciaMaxima(M,S) :- secuenciaRepetida(M,S), length(S,N) , not((secuenciaRepetida(M,S1), length(S1,N1), N1 > N)).
+
+
+todasLasMatrices(M) :- desde(1,NCOL), between(1,NCOL,MFILAS), generarMatrizMN(MFILAS,NCOL,M).
+
+%% Ejercicio 23
+
+arbol(A) :- desde(0,N), arbolesDeTamanoN(N,A).
+
+arbolesDeTamanoN(0,nil).
+arbolesDeTamanoN(N,bin(AI,_,AD)) :- 
+    N > 0,
+    N1 is N - 1,
+    between(0,N1,NI),
+    ND is N1 - NI,
+    arbolesDeTamanoN(NI,AI),
+    arbolesDeTamanoN(ND,AD).
+
+
+nodosEnA(nil,_).
+nodosEnA(bin(I,X,D),XS) :- member(X,XS), nodosEnA(I,XS), nodosEnA(D,XS).
+
+sinRepEnA(A,L) :- arbol(A), nodosEnA(A,L), length(),).
+
+
+arbolConRepetidos(bin(I,R,_)) :- memberArboles(R,I).
+arbolConRepetidos(bin(_,R,D)) :- memberArboles(R,D).
+arbolConRepetidos(bin(I,R,_)) :- arbolConRepetidos(I).
+arbolConRepetidos(bin(_S,R,D)) :- arbolConRepetidos(D).
+
+
+memberArboles(R,bin(_,R,_)).
+memberArboles(R,bin(I,N,_)) :- N \= R, memberArboles(R,I).
+memberArboles(R,bin(_,N,D)) :- N \= R, memberArboles(R,D).
+
+
+
