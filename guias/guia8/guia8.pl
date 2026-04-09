@@ -1,7 +1,5 @@
-
-
-
 %% Ejercicio 4 
+
 juntar([],XS,XS).
 juntar([X|XS],YS,[X|ZS]) :- juntar(XS,YS,ZS).
 
@@ -17,13 +15,13 @@ prefijo(P,L) :- append(P,_,L).
 
 sufijo(S,L) :- append(_,S,L).
 
-
 sublista(S,L) :- prefijo(P,L) , sufijo(S,P). 
 
 pertenece(X,[X|_]).
 pertenece(X,[Y|YS]) :- X \= Y , pertenece(X,YS).
 
 %% Ejercicio 6 
+
 aplanar([],[]).
 aplanar([X|XS],[X|ZS]) :- not(is_list(X)), aplanar(XS,ZS).
 aplanar([X|XS],ZS) :- is_list(X), aplanar(X,R), aplanar(XS,ZS1), append(R,ZS1,ZS).
@@ -44,17 +42,14 @@ sacarDuplicados([],[]).
 sacarDuplicados([X|XS],[X|YS]) :- \+ member(X,XS), sacarDuplicados(XS,YS).
 sacarDuplicados([X|XS],YS) :- member(X,XS), sacarDuplicados(XS,YS).
 
-
 permutacion([],[]).
 permutacion(XS,[X|YS]) :- append(L1,[X|L2],XS), append(L1,L2,ZS), permutacion(ZS,YS).
-
 
 reparto(L,1,[L]).
 reparto(L,N,[P|LLS]) :- N > 1,  append(P,RESTO,L) ,N1 is N - 1, reparto(RESTO,N1,LLS).
 
 repartoSinVacias(L,1,[L]) :- L \= [].
 repartoSinVacias(L,N,[P|LLS]) :- N > 1,   append(P,RESTO,L), P \= [], N1 is N - 1, repartoSinVacias(RESTO,N1,LLS).
-
 
 %% Ejercicio 8
 
@@ -128,13 +123,16 @@ coprimos(X,Y) :- desde(1,X), between(1,X,Y), 1 is gcd(X,Y).
 
 %% Ejercicio 14 
 
-%% i 
-
 cuadradoSemiMagico(N,XS) :- desde(0,S), generarMatrizMN(N,N,XS), cadaUnaSumaS(XS,S).
 
-% genera una matriz de M filas por N columnas.
 generarMatrizMN(_,0,[]).
-generarMatrizMN(M,N,[X|XS]) :-  N > 0, length(X,M), N1 is N - 1 , generarMatrizMN(M,N1,XS).
+generarMatrizMN(M,N,XS) :- generarMFilas(M,XS), generarNColumnas(N,XS).
+
+generarMFilas(0,[]).
+generarMFilas(M,[_|XS]) :- M > 0, M1 is M - 1, generarMFilas(M1,XS).
+
+generarNColumnas(_,[]).
+generarNColumnas(N,[X|XS]) :- N > 0, length(X,N), generarNColumnas(N,XS).
 
 cadaUnaSumaS([],_).
 cadaUnaSumaS([X|XS],S) :- sumaS(X,S), cadaUnaSumaS(XS,S).
@@ -143,49 +141,113 @@ sumaS([],0).
 sumaS([X|XS],S) :- between(0,S,X), Resto is S - X , sumaS(XS,Resto).
 
 %% ii 
-cuadradoMagico(N,XS) :- N > 0 , cuadradoSemiMagico(N,XS), columnasSumanLoMismo(XS).
+cuadradoMagico(N,XS) :- N > 0 , cuadradoSemiMagico(N,XS), cuantasColumnas(XS,M) ,mcolumnasSumanLoMismo(M,XS,CS), todasSumanLoMismo(CS).
 
-columnasSumanLoMismo([X|XS]) :- length(X,L), L1 is L - 1, between(0,L1,I), chequearColumnas(I,L1,[X|XS]). 
+cuantasColumnas([],0).
+cuantasColumnas([X|_],N) :- length(X,N).
+
+mcolumnasSumanLoMismo(0, _, []).
+mcolumnasSumanLoMismo(M, XS, [C|CS]) :-
+    M > 0,
+    obtener_columnaM(M, XS, C),
+    M1 is M - 1,
+    mcolumnasSumanLoMismo(M1, XS, CS).
+
+obtener_columnaM(M,XS,C) :- obtener_columna(XS,M,C).
+
+todasSumanLoMismo([]).
+todasSumanLoMismo([X|XS]) :- sumlist(X,N), restoSumaLoMismo(XS,N).
+
+restoSumaLoMismo([],_).
+restoSumaLoMismo([X|XS],N) :- sumlist(X,N), restoSumaLoMismo(XS,N).
 
 
 obtener_columna([], _, []).
 obtener_columna([Fila | Resto], I, [Elem | Col]) :-
-    nth0(I, Fila, Elem),
+    nth1(I, Fila, Elem),
     obtener_columna(Resto, I, Col).
 
+%% Ejercicio 15
 
 esTriangulo(tri(A,B,C)) :-
     A > 0, B > 0, C > 0,
     A+B > C, A+C > B, B+C > A.
 
-
 perimetro(T,P) :-  \+ var(P), generarTrianguloDePerimetro(T,P).
 perimetro(T,P) :-   var(P), desde(3,P), generarTrianguloDePerimetro(T,P).
 
-
-
 triangulo(T) :- desde(3,P), generarTrianguloDePerimetro(T,P), esTriangulo(T).
-
 
 generarTrianguloDePerimetro(tri(A,B,C),P) :- between(1,P,A), Dif is P - A, between(1,Dif,B), C is Dif - B, C > 0, esTriangulo(tri(A,B,C)).
 
+%% 												Negacion por falla y cut  
 
-%% Ejercicios de Parcial.
+%% Ejercicio 16 
+
+frutal(frutilla).
+frutal(banana).
+frutal(manzana).
+cremoso(banana).
+cremoso(americana).
+cremoso(frutilla).
+cremoso(dulceDeLeche).
+
+leGusta(X) :- frutal(X), cremoso(X).
+cucurucho(X,Y) :- leGusta(X), leGusta(Y).
+
+% i. Escribir el árbol de búsqueda para la consulta ?- cucurucho(X,Y).
+% ii. Indicar qué partes del árbol se podan al colocar un ! en cada ubicación posible en las deniciones de
+% cucurucho y leGusta
+
+% ?- cucurucho(X,Y) 
+% 			|- leGusta(X), leGusta(Y).
+% 				|- frutal(X), cremoso(X), leGusta(Y).
+% 					|- cremoso(frutilla), leGusta(Y). {X := frutilla}
+% 						|- leGusta(Y).
+% 							|- frutal(Y), cremoso(Y) .
+% 								|- cremoso(frutilla). {X:= frutilla,Y := frutilla}
+							% |- cremoso(banana) {Y:= banana}
+							% 	|- {X:= frutilla,Y := banana}
+							% |- 	
+%% Ejercicio 18
+
 unCorte(L,L1,L2,D) :- append(L1,L2,L), sumlist(L1,S1), sumlist(L2,S2), D is abs(S1-S2).
-
 corteMasParejo(L, L1, L2) :- unCorte(L,L1,L2,D), not((unCorte(L,_,_,D2), D2 < D)).
 
-
+%% Ejercicio 20
 
 proximoNumeroPoderoso(X,Y) :- buscarPoderoso(X,Y) , !.
 
 buscarPoderoso(X,Y) :- X1 is X + 1, desde(X1,Y), esPoderoso(Y).
 
-
 esPoderoso(Y):- \+ (between(1,Y,I),esPrimo(I),0 is Y mod I, \+ (0 is Y mod (I * I))).
 
 esPrimo(2).
 esPrimo(X) :- X > 2, X1 is X - 1,  not((between(2,X1,I), 0 is X mod I)).
+
+%% Ejercicio 21
+
+% Contamos con una representación de conjuntos desconocida, que permite enumerar un conjunto mediante el
+% predicado pertenece(?Elemento, +Conjunto). Dado el siguiente predicado:
+natural(cero).
+natural(suc(X)) :- natural(X).
+% Definir el predicado conjuntoDeNaturales(X) que sea verdadero cuando todos los elementos de X son
+% naturales (se asume que X es un conjunto).
+conjuntoDeNaturales([]).
+conjuntoDeNaturales([X|XS]) :- natural(X), conjuntoDeNaturales(XS).
+
+% Con qué instanciación de X funciona bien el predicado anterior? Justificar.
+% funciona bien si el conjunto X esta instanciado, ya que si no lo esta, lo que pasa es que te van quedando la lista de N ceros.
+% Si esta instanciado funciona.
+
+% Indicar el error en la siguiente definición alternativa, justificando por qué no funciona correctamente:
+
+ conjuntoDeNaturalesMalo(X) :- not( (not(natural(E)), pertenece(E,X)) ).
+
+
+%% Ejercicios de Parcial.
+
+
 
 
 listaAmelodia([X],X).
@@ -235,7 +297,6 @@ arbolesDeTamanoN(N,bin(AI,_,AD)) :-
 nodosEnA(nil,_).
 nodosEnA(bin(I,X,D),XS) :- member(X,XS), nodosEnA(I,XS), nodosEnA(D,XS).
 
-sinRepEnA(A,L) :- arbol(A), nodosEnA(A,L), length(),).
 
 
 arbolConRepetidos(bin(I,R,_)) :- memberArboles(R,I).
