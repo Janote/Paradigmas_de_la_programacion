@@ -1,0 +1,45 @@
+Dos tipos son isomorfos si existen 2 funciones:
+f :: a -> b,
+g :: b -> a
+tales que f . g = id y g . f = id
+
+Teniendo los siguientes tipos de dato:
+
+Either a b = left a | right b
+
+AB a = nil | bin a (AB a) (AB a)
+AX a b = vacio | nodoA a (AX a b) (AX a b) | nodoAB a b (AX a) (AX a)
+
+Demostrar que los tipos (AX a b) y AB (either a (a,b)) son isomorfos.
+
+Q.v.Q : (AX a b) = AB (Either a b)
+
+Defino g :: AB(Either a (a,b)) -> AX a b 
+g Nil  = vacio
+g (Bin v i d ) =  case v of 
+                    Left x -> nodoA x (g i) (g d) 
+                    Right (x,y) -> nodoAB x y (g i) (g d)
+                
+f :: AX a b -> AB(Either a b)
+f vacio = Nil
+f (NodoA v i d) = Bin (Left v) (f i) (f d)
+f (NodoAB (x,y) i d) = Bin (Right (x,y)) (f i) (f d) 
+
+Empezemos.
+Por extensionalidad de arboles binarios (AB) , existe:
+E a :: AB (Either(a,(a,b))) = Nil
+E r :: Either(a,(a,b)) . E i ,d:: AB (Either(a,(a,b))) = Bin i r d 
+
+f . g Nil ={.} f (g Nil) = f vacio = Nil = id Nil 
+
+f . g (Bin r i d) = f (g (Bin r i d))
+
+Por lema de generacion de sumas, r puede ser
+
+O bien E v :: a . r = Left v 
+f (g (Bin (Left v) i d)) = 
+f (nodoA v (f i ) (f d))
+
+
+O bien E v :: (a,b) r = Right (x,y)
+

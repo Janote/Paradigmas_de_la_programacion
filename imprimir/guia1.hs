@@ -108,7 +108,6 @@ normaVectorial x y = sqrt (x^2 + y^2)
 {- HLINT ignore "Use sum" -}
 {- HLINT ignore "Use map" -}
 {- HLINT ignore "Avoid lambda" -}
-{- HLINT ignore "Use lambda-case" -}
 
 xcurry :: ((a, b) -> c) -> a -> b -> c
 xcurry f x y = f (x, y)
@@ -358,7 +357,7 @@ En cambio en el 4, si necesito ir chequeando c/ subarbol, por lo que usamos el e
 
  -}
 
--- Ejercicio 21
+-- Ejercicio 21 
 
 listasQueSuman :: Int -> [[Int]]
 listasQueSuman 0 = [[]]
@@ -367,61 +366,5 @@ listasQueSuman n = [x : xs | x <- [1 .. n], xs <- listasQueSuman (n - x)]
 todaslasListasFinitas :: [[Int]]
 todaslasListasFinitas = [xs | x <- [1 ..], xs <- listasQueSuman x]
 
--- Sueltos ?
-data RoseTree a = Rose a [RoseTree a]
-
-foldRoseTree :: (a -> [b] -> b) -> RoseTree a -> b
-foldRoseTree f (Rose x xs) = f x (map rec xs)
-  where
-    rec = foldRoseTree f
-
-hojas :: RoseTree a -> [[a]]
-hojas = foldRoseTree (\c xs -> if null xs then [[c]] else map ([c] ++) (concat xs))
-
-distancias :: RoseTree a -> [Int]
-distancias = foldRoseTree (\_ xs -> if null xs then [1] else map (+ 1) (concat xs))
-
-xaltura :: RoseTree a -> Int
-xaltura = foldRoseTree (\_ xs -> 1 + (if null xs then 0 else maximum xs))
-
-ejemplo :: RoseTree Int
-ejemplo =
-  Rose
-    1
-    [ Rose
-        2
-        [ Rose 5 [],
-          Rose 6 []
-        ],
-      Rose 3 [],
-      Rose
-        4
-        [ Rose 7 []
-        ]
-    ]
-
-data A a b = C1 a | C2 b | C3 a (A a b)
-
-mapA :: (a -> c) -> (b -> c) -> (a -> c -> c) -> A a b -> c
-mapA fC1 fC2 fC3 (C1 a) = fC1 a
-mapA fC1 fC2 fC3 (C2 b) = fC2 b
-mapA fC1 fC2 fC3 (C3 x dat) = fC3 x (rec dat)
-  where
-    rec = mapA fC1 fC2 fC3
-
-espejo ::  AB a -> AB a
-espejo = foldAB Nil (\ri v rd -> Bin rd v ri)
-
-espejoDe :: Eq a => AB a -> AB a -> Bool
-espejoDe a1 = arbolesIguales (espejo a1)
-
-arbolesIguales :: Eq a => AB a -> AB a -> Bool
-arbolesIguales = foldAB (\arbol -> case arbol of
-  Nil -> True
-  _ -> False
-  ) (\ri v rd arbol -> case arbol of
-    Nil -> False
-    Bin izq valor derecho -> v == valor && ri izq && rd derecho)
-
-type D = Int
+-- Ejercicio 22
 

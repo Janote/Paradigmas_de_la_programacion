@@ -26,9 +26,6 @@ V x :: a. V y :: b . V y z :: c . asociarD (asociarI (x,(y,z))) = (x,(y,z))
 V x :: a. V y :: b . V y z :: c . asociarD ((x,y),z) = (x,(y,z)) {AI}
 V x :: a. V y :: b . V y z :: c . (x,(y,z)) = (x,(y,z)) {AD}
 
-
-
-
 iii. ∀ p::Either a b .espejar (espejar p) = p
 
 Por lema de generacion de sumas:
