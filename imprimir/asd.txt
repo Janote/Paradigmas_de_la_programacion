@@ -1,0 +1,13 @@
+Haskell
+Documentación: Hoogle, Hackage: The Haskell Package Repository
+
+Funciones: foldr, foldl, foldr1, foldl1, map, zipWith, all, any, null, nub, sort, sortBy, mod, div, odd, even, (++), head, tail, init, last, length, replicate, repeat, iterate, filter, take, drop, elem, find, isNothing, isJust, fromJust, maybe, lookup, reverse, concat, union, intersect, (>>=), span, takeWhile, dropWhile, concatMap, and, or, sum, max, maximum, maximumBy, min, minimum, minimumBy, (==), (/=), compare, comparing, not, ord, chr
+
+Algunas de estas funciones no se encuentran definidas en el preludio, sino en los módulos List o Maybe. Para usarlas, incluir la(s) línea(s) import Data.List y/o import Data.Maybe respectivamente en el archivo fuente.
+
+Prolog
+Documentación: SWI-Prolog
+
+Predicados: =, sort, msort, length, nth1, nth0, member, append, last, between, is_list, list_to_set, is_set, union, intersection, subset, subtract, select, delete, reverse, atom, number, numlist, sum_list, flatten
+
+Operaciones extra-lógicas: is, \=, ==, =:=, =\=, >, <, =<, >=, abs, max, min, mod, gcd, var, nonvar, ground, trace, notrace, make, halt
